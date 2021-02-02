@@ -14,6 +14,8 @@ namespace FinancialSystem.DataAccess.EntityConfiguration.Invoices
             builder.Property(x => x.Identifier).IsRequired()
                 .HasMaxLength(64).IsUnicode(false);
             builder.Property(x => x.Amount).IsRequired().HasPrecision(10, 2);
+
+            builder.Property(x => x.UserId).IsRequired();
         }
     }
 }

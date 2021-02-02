@@ -1,19 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.Security.Principal;
 using FinancialSystem.BusinessContracts.Invoices;
 using FinancialSystem.BusinessContracts.Invoices.Dtos;
 using FinancialSystem.BusinessImplementations.Invoices.Mappings;
 using FinancialSystem.Common.Exceptions;
 using FinancialSystem.Domain.Invoices.Repositories;
+using FinancialSystem.WebApi.Helpers;
 
 namespace FinancialSystem.BusinessImplementations.Invoices
 {
     public class InvoiceNoteService : IInvoiceNoteService
     {
         private readonly IInvoiceNoteRepository invoiceNoteRepository;
+        private readonly IPrincipal currentPrincipal;
 
-        public InvoiceNoteService(IInvoiceNoteRepository invoiceNoteRepository)
+        public InvoiceNoteService(IInvoiceNoteRepository invoiceNoteRepository, IPrincipal currentPrincipal)
         {
             this.invoiceNoteRepository = invoiceNoteRepository;
+            this.currentPrincipal = currentPrincipal;
         }
         public IReadOnlyCollection<InvoiceNoteDto> GetAllByInvoiceId(int invoiceId)
         {
@@ -39,7 +43,8 @@ namespace FinancialSystem.BusinessImplementations.Invoices
 
         public InvoiceNoteDto Create(InvoiceNoteDto invoiceNote)
         {
-            var insertedEntity = invoiceNoteRepository.Insert(invoiceNote.ToInvoiceNote());
+            var insertedEntity = invoiceNoteRepository.Insert(
+                invoiceNote.ToInvoiceNote(currentPrincipal.GetUserId()));
             invoiceNoteRepository.Save();
 
             return insertedEntity.ToInvoiceNoteDto();
@@ -47,7 +52,14 @@ namespace FinancialSystem.BusinessImplementations.Invoices
 
         public void Update(InvoiceNoteDto invoiceNote)
         {
-            invoiceNoteRepository.Update(invoiceNote.ToInvoiceNote());
+            var userId = currentPrincipal.GetUserId();
+            var entity = invoiceNoteRepository.GetById(invoiceNote.Id);
+            if (userId != entity?.UserId)
+            {
+                throw new ForbiddenException();
+            }
+
+            invoiceNoteRepository.Update(invoiceNote.ToInvoiceNote(entity));
             invoiceNoteRepository.Save();
         }
     }

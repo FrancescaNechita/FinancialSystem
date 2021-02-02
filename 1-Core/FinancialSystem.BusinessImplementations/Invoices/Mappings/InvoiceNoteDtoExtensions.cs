@@ -1,28 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using FinancialSystem.BusinessContracts.Invoices.Dtos;
+﻿using FinancialSystem.BusinessContracts.Invoices.Dtos;
 using FinancialSystem.Domain.Invoices.Entities;
 
 namespace FinancialSystem.BusinessImplementations.Invoices.Mappings
 {
     public static class InvoiceNoteDtoExtensions
     {
-        public static InvoiceNote ToInvoiceNote(this InvoiceNoteDto invoiceNote)
+        public static InvoiceNote ToInvoiceNote(this InvoiceNoteDto invoiceNoteDto, int userId)
         {
-            return invoiceNote == null
+            return invoiceNoteDto == null
                 ? null
                 : new InvoiceNote()
                 {
-                    Id = invoiceNote.Id,
-                    InvoiceId = invoiceNote.InvoiceId,
-                    Text = invoiceNote.Text
+                    Id = invoiceNoteDto.Id,
+                    InvoiceId = invoiceNoteDto.InvoiceId,
+                    Text = invoiceNoteDto.Text,
+                    UserId = userId
                 };
         }
 
-        public static IReadOnlyCollection<InvoiceNote> ToInvoiceNotes(
-            this IEnumerable<InvoiceNoteDto> invoiceNoteDtos)
+        public static InvoiceNote ToInvoiceNote(this InvoiceNoteDto invoiceNoteDto, InvoiceNote invoiceNote)
         {
-            return invoiceNoteDtos.Select(x => x.ToInvoiceNote()).ToList();
+            invoiceNote.Text = invoiceNoteDto.Text;
+            return invoiceNote;
         }
     }
 }

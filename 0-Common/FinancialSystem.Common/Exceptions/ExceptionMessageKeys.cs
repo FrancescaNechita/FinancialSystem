@@ -5,5 +5,6 @@
         public static readonly string BadRequest = "badRequest";
         public static readonly string GeneralException = "errorOccurred";
         public static readonly string NotFound = "notFound";
+        public static readonly string Forbidden = "forbidden";
     }
 }

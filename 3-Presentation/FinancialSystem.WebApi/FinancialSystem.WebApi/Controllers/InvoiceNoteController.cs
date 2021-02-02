@@ -1,12 +1,15 @@
 ﻿using FinancialSystem.BusinessContracts.Invoices;
 using FinancialSystem.BusinessContracts.Invoices.Dtos;
 using FinancialSystem.Common.Exceptions;
+using FinancialSystem.WebApi.ApiKey;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinancialSystem.WebApi.Controllers
 {
     [Route("api/invoices/{invoiceId}/notes")]
     [ApiController]
+    [Authorize(Policy = Policies.AllUsers)]
     public class InvoiceNoteController : ControllerBase
     {
         private readonly IInvoiceNoteService invoiceNoteService;

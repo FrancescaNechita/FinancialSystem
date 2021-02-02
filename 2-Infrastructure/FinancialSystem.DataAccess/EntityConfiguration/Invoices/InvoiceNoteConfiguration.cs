@@ -17,6 +17,8 @@ namespace FinancialSystem.DataAccess.EntityConfiguration.Invoices
             builder.HasOne<Invoice>()
                 .WithMany()
                 .HasForeignKey(x => x.InvoiceId);
+
+            builder.Property(x => x.UserId).IsRequired();
         }
     }
 }

@@ -1,8 +1,5 @@
 using FinancialSystem.IoC;
-using FinancialSystem.WebApi.ApiKey;
-using FinancialSystem.WebApi.ApiKey.Requirements;
 using FinancialSystem.WebApi.Configurations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,47 +18,21 @@ namespace FinancialSystem.WebApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "FinancialSystem.WebApi", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FinancialSystem.WebApi", Version = "v1" });
             });
+
 
             services.AddIoc(Configuration);
+            services.AddApiIoc();
 
-            //services.AddAuthorization(authConfig =>
-            //{
-            //    authConfig.AddPolicy("Admin",
-            //        policyBuilder => policyBuilder
-            //            .AddRequirements(new ApiKeyRequirement(
-            //                new List<ApiKey>{ new ApiKey("admin123", "1"), new ApiKey("admin345", "2") })));
-            //    authConfig.AddPolicy("User",
-            //        policyBuilder => policyBuilder
-            //            .AddRequirements(new ApiKeyRequirement(
-            //                new List<ApiKey> { new ApiKey("admin123", "1"), new ApiKey("admin345", "2") })));
-            //});
-
-            services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = ApiKeyAuthenticationOptions.DefaultScheme;
-                    options.DefaultChallengeScheme = ApiKeyAuthenticationOptions.DefaultScheme;
-                })
-                .AddApiKeySupport(options => { });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(Policies.OnlyAdmins, policy => policy.Requirements.Add(new OnlyAdminsRequirement()));
-                options.AddPolicy(Policies.AllUsers, policy => policy.Requirements.Add(new AllUsersRequirement()));
-            });
-
-            services.AddSingleton<IAuthorizationHandler, AuthorizationHandler>();
-            services.AddSingleton<IGetApiKeyQuery, InMemoryGetApiKeyQuery>();
+            services.AddAuthenticationAndAuthorization();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

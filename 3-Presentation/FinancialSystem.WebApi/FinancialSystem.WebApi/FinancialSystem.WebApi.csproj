@@ -17,8 +17,4 @@
     <ProjectReference Include="..\..\..\2-Infrastructure\FinancialSystem.IoC\FinancialSystem.IoC.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
-
 </Project>
